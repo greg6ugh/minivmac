@@ -93,58 +93,13 @@ LOCALFUNC blnr CheckActvCode(ui3p p, blnr *Trial)
 
 /* user interface */
 
-LOCALFUNC blnr Key2Digit(ui3r key, ui3r *r)
+LOCALFUNC blnr Key2Digit(ui3r asciiKey, ui3r *r)
 {
-	ui3r v;
+    if (asciiKey < '0' || asciiKey > '9')
+        return falseblnr;
 
-	switch (key) {
-		case MKC_0:
-		case MKC_KP0:
-			v = 0;
-			break;
-		case MKC_1:
-		case MKC_KP1:
-			v = 1;
-			break;
-		case MKC_2:
-		case MKC_KP2:
-			v = 2;
-			break;
-		case MKC_3:
-		case MKC_KP3:
-			v = 3;
-			break;
-		case MKC_4:
-		case MKC_KP4:
-			v = 4;
-			break;
-		case MKC_5:
-		case MKC_KP5:
-			v = 5;
-			break;
-		case MKC_6:
-		case MKC_KP6:
-			v = 6;
-			break;
-		case MKC_7:
-		case MKC_KP7:
-			v = 7;
-			break;
-		case MKC_8:
-		case MKC_KP8:
-			v = 8;
-			break;
-		case MKC_9:
-		case MKC_KP9:
-			v = 9;
-			break;
-		default:
-			return falseblnr;
-			break;
-	}
-
-	*r = v;
-	return trueblnr;
+    *r = asciiKey - '0';
+    return trueblnr;
 }
 
 #define ActvCodeMaxLen 20
@@ -160,19 +115,19 @@ FORWARDFUNC tMacErr ActvCodeFileLoad(ui3p p);
 
 LOCALVAR ui3b CurActvCode[ActvCodeFileLen];
 
-LOCALPROC DoActvCodeModeKey(ui3r key)
+LOCALPROC DoActvCodeModeKey(ui3r asciiKey)
 {
 	ui3r digit;
 	ui3r L;
 	int i;
 	blnr Trial;
 
-	if (MKC_BackSpace == key) {
+	if (ASCII_BackSpace == asciiKey || ASCII_Del == asciiKey ) {
 		if (ActvCodeLen > 0) {
 			--ActvCodeLen;
 			NeedWholeScreenDraw = trueblnr;
 		}
-	} else if (Key2Digit(key, &digit)) {
+	} else if (Key2Digit(asciiKey, &digit)) {
 		if (ActvCodeLen < (ActvCodeMaxLen - 1)) {
 			ActvCodeDigits[ActvCodeLen] = digit;
 			++ActvCodeLen;
