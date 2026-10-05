@@ -405,9 +405,9 @@ LOCALPROC MacMsgDisplayOn(void)
 	SpecialModeSet(SpclModeMessage);
 }
 
-LOCALPROC DoMessageModeKey(ui3r key)
+LOCALPROC DoMessageModeKey(ui3r ascii)
 {
-	if (MKC_C == key) {
+	if ('C' == ascii) {
 		MacMsgDisplayOff();
 	}
 }
@@ -637,31 +637,31 @@ LOCALPROC CopyRegistrationStr(void)
 #endif
 
 
-LOCALPROC DoControlModeKey(ui3r key)
+LOCALPROC DoControlModeKey(ui3r ascii)
 {
 	switch (CurControlMode) {
 		case kCntrlModeBase:
-			switch (key) {
+			switch (ascii) {
 #if WantEnblCtrlKtg
-				case MKC_K:
+				case 'K':
 					ControlKeyPressed = ! ControlKeyPressed;
 					ControlMessage = kCntrlMsgEmCntrl;
 					Keyboard_UpdateKeyMap1(MKC_UnMappedKey,
 						ControlKeyPressed);
 					break;
 #endif
-				case MKC_S:
+				case 'S':
 					CurControlMode = kCntrlModeSpeedControl;
 					ControlMessage = kCntrlMsgSpeedControlStart;
 					break;
 #if WantEnblCtrlInt
-				case MKC_I:
+				case 'I':
 					CurControlMode = kCntrlModeConfirmInterrupt;
 					ControlMessage = kCntrlMsgConfirmInterruptStart;
 					break;
 #endif
 #if WantEnblCtrlRst
-				case MKC_R:
+				case 'R':
 					if (! AnyDiskInserted()) {
 						WantMacReset = trueblnr;
 						ControlMessage = kCntrlMsgHaveReset;
@@ -671,7 +671,7 @@ LOCALPROC DoControlModeKey(ui3r key)
 					}
 					break;
 #endif
-				case MKC_Q:
+				case 'Q':
 					if (! AnyDiskInserted()) {
 						ForceMacOff = trueblnr;
 					} else {
@@ -679,67 +679,67 @@ LOCALPROC DoControlModeKey(ui3r key)
 						ControlMessage = kCntrlMsgConfirmQuitStart;
 					}
 					break;
-				case MKC_A:
+				case 'A':
 					ControlMessage = kCntrlMsgAbout;
 					break;
-				case MKC_H:
+				case 'H':
 					ControlMessage = kCntrlMsgHelp;
 					break;
 #if NeedRequestInsertDisk
-				case MKC_O:
+				case 'O':
 					RequestInsertDisk = trueblnr;
 					break;
 #endif
 #if EnableMagnify
-				case MKC_M:
+				case 'M':
 					WantMagnify = ! WantMagnify;
 					ControlMessage = kCntrlMsgMagnify;
 					break;
 #endif
 #if VarFullScreen
-				case MKC_F:
+				case 'F':
 					ToggleWantFullScreen();
 					ControlMessage = kCntrlMsgFullScreen;
 					break;
 #endif
 #if IncludeHostTextClipExchange
-				case MKC_P:
+				case 'P':
 					CopyOptionsStr();
 					ControlMessage = kCntrlMsgOptionsStrCopied;
 					break;
 #endif
 #if 0 && (UseActvCode || EnableDemoMsg)
-				case MKC_P:
+				case 'P':
 					CopyRegistrationStr();
 					ControlMessage = kCntrlMsgRegStrCopied;
 					break;
 #endif
 #if NeedRequestIthDisk
-				case MKC_1:
+				case '1':
 					RequestIthDisk = 1;
 					break;
-				case MKC_2:
+				case '2':
 					RequestIthDisk = 2;
 					break;
-				case MKC_3:
+				case '3':
 					RequestIthDisk = 3;
 					break;
-				case MKC_4:
+				case '4':
 					RequestIthDisk = 4;
 					break;
-				case MKC_5:
+				case '5':
 					RequestIthDisk = 5;
 					break;
-				case MKC_6:
+				case '6':
 					RequestIthDisk = 6;
 					break;
-				case MKC_7:
+				case '7':
 					RequestIthDisk = 7;
 					break;
-				case MKC_8:
+				case '8':
 					RequestIthDisk = 8;
 					break;
-				case MKC_9:
+				case '9':
 					RequestIthDisk = 9;
 					break;
 #endif
@@ -747,16 +747,16 @@ LOCALPROC DoControlModeKey(ui3r key)
 			break;
 #if WantEnblCtrlRst
 		case kCntrlModeConfirmReset:
-			switch (key) {
-				case MKC_Y:
+			switch (ascii) {
+				case 'Y':
 					WantMacReset = trueblnr;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgHaveReset;
 					break;
-				case MKC_R:
+				case 'R':
 					/* ignore, in case of repeat */
 					break;
-				case MKC_N:
+				case 'N':
 				default:
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgResetCancelled;
@@ -766,16 +766,16 @@ LOCALPROC DoControlModeKey(ui3r key)
 #endif
 #if WantEnblCtrlInt
 		case kCntrlModeConfirmInterrupt:
-			switch (key) {
-				case MKC_Y:
+			switch (ascii) {
+				case 'Y':
 					WantMacInterrupt = trueblnr;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgHaveInterrupted;
 					break;
-				case MKC_I:
+				case 'I':
 					/* ignore, in case of repeat */
 					break;
-				case MKC_N:
+				case 'N':
 				default:
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgInterruptCancelled;
@@ -784,17 +784,17 @@ LOCALPROC DoControlModeKey(ui3r key)
 			break;
 #endif
 		case kCntrlModeConfirmQuit:
-			switch (key) {
-				case MKC_Y:
+			switch (ascii) {
+				case 'Y':
 					ForceMacOff = trueblnr;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgBaseStart;
 						/* shouldn't see this message since quitting */
 					break;
-				case MKC_Q:
+				case 'Q':
 					/* ignore, in case of repeat */
 					break;
-				case MKC_N:
+				case 'N':
 				default:
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgQuitCancelled;
@@ -802,17 +802,17 @@ LOCALPROC DoControlModeKey(ui3r key)
 			}
 			break;
 		case kCntrlModeSpeedControl:
-			switch (key) {
-				case MKC_E:
+			switch (ascii) {
+				case 'E':
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgBaseStart;
 					break;
-				case MKC_B:
+				case 'B':
 					RunInBackground = ! RunInBackground;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgNewRunInBack;
 					break;
-				case MKC_D:
+				case 'D':
 					if (ROM_loaded) {
 						SpeedStopped = ! SpeedStopped;
 						CurControlMode = kCntrlModeBase;
@@ -820,31 +820,31 @@ LOCALPROC DoControlModeKey(ui3r key)
 					}
 					break;
 #if EnableAutoSlow
-				case MKC_W:
+				case 'W':
 					WantNotAutoSlow = ! WantNotAutoSlow;
 					CurControlMode = kCntrlModeBase;
 					ControlMessage = kCntrlMsgNewAutoSlow;
 					break;
 #endif
-				case MKC_Z:
+				case 'Z':
 					SetSpeedValue(0);
 					break;
-				case MKC_1:
+				case '1':
 					SetSpeedValue(1);
 					break;
-				case MKC_2:
+				case '2':
 					SetSpeedValue(2);
 					break;
-				case MKC_3:
+				case '3':
 					SetSpeedValue(3);
 					break;
-				case MKC_4:
+				case '4':
 					SetSpeedValue(4);
 					break;
-				case MKC_5:
+				case '5':
 					SetSpeedValue(5);
 					break;
-				case MKC_A:
+				case 'A':
 					SetSpeedValue((ui3b) -1);
 					break;
 			}
@@ -1253,7 +1253,71 @@ LOCALFUNC ui3r Keyboard_RemapMac(ui3r key)
 }
 #endif /* WantKeyboard_RemapMac */
 
+LOCALFUNC ui3r MKC2Ascii(ui3r key)
+{
+	switch (key) {
+		case MKC_A: return 'A';
+		case MKC_B: return 'B';
+		case MKC_C: return 'C';
+		case MKC_D: return 'D';
+		case MKC_E: return 'E';
+		case MKC_F: return 'F';
+		case MKC_G: return 'G';
+		case MKC_H: return 'H';
+		case MKC_I: return 'I';
+		case MKC_J: return 'J';
+		case MKC_K: return 'K';
+		case MKC_L: return 'L';
+		case MKC_M: return 'M';
+		case MKC_N: return 'N';
+		case MKC_O: return 'O';
+		case MKC_P: return 'P';
+		case MKC_Q: return 'Q';
+		case MKC_R: return 'R';
+		case MKC_S: return 'S';
+		case MKC_T: return 'T';
+		case MKC_U: return 'U';
+		case MKC_V: return 'V';
+		case MKC_W: return 'W';
+		case MKC_X: return 'X';
+		case MKC_Y: return 'Y';
+		case MKC_Z: return 'Z';
+
+		case MKC_0: case MKC_KP0: return '0';
+		case MKC_1: case MKC_KP1: return '1';
+		case MKC_2: case MKC_KP2: return '2';
+		case MKC_3: case MKC_KP3: return '3';
+		case MKC_4: case MKC_KP4: return '4';
+		case MKC_5: case MKC_KP5: return '5';
+		case MKC_6: case MKC_KP6: return '6';
+		case MKC_7: case MKC_KP7: return '7';
+		case MKC_8: case MKC_KP8: return '8';
+		case MKC_9: case MKC_KP9: return '9';
+
+		case MKC_BackSpace: return ASCII_BackSpace;
+
+		default: return ASCII_None;
+	}
+}
+
+LOCALFUNC ui3r MakeBestSpcModeKey(ui3r key, ui5r chr)
+{
+	if (chr >= 'a' && chr <= 'z') {
+		chr -= 'a' - 'A';
+	}
+	if ((chr >= 'A' && chr <= 'Z')
+		|| (chr >= '0' && chr <= '9'))
+	{
+		return (ui3r)chr;
+	}
+	return MKC2Ascii(key);
+}
+
+#ifdef Use_Keyboard_DispatchKey
+LOCALPROC Keyboard_DispatchKey(ui3r key, ui5r chr, blnr down)
+#else
 LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
+#endif
 {
 #if UseControlKeys
 	if (MKC_CM == key) {
@@ -1279,17 +1343,21 @@ LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
 		Keyboard_UpdateKeyMap1(key, down);
 	} else {
 		if (down) {
+#ifndef Use_Keyboard_DispatchKey
+			ui5r chr = ASCII_None;
+#endif
+			ui3r ascii = MakeBestSpcModeKey(key, chr);
 #if UseControlKeys
 			if (SpecialModeTst(SpclModeControl)) {
-				DoControlModeKey(key);
+				DoControlModeKey(ascii);
 			} else
 #endif
 			if (SpecialModeTst(SpclModeMessage)) {
-				DoMessageModeKey(key);
+				DoMessageModeKey(ascii);
 			} else
 #if UseActvCode
 			if (SpecialModeTst(SpclModeActvCode)) {
-				DoActvCodeModeKey(key);
+				DoActvCodeModeKey(ascii);
 			} else
 #endif
 			{

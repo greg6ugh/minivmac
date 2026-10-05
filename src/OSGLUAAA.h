@@ -459,3 +459,6 @@ EXPORTOSGLUPROC MyEvtQOutDone(void);
 		when CapsLocks need special handling.
 	*/
 #define MKC_None 0xFF
+
+#define ASCII_None 0
+#define ASCII_BackSpace 8
