@@ -455,6 +455,8 @@ LOCALPROC dbglog_close0(void)
 
 #include "PBUFSTDC.h"
 
+#define Use_Keyboard_DispatchKey
+
 #include "CONTROLM.h"
 
 /* --- text translation --- */
@@ -1547,70 +1549,70 @@ LOCALPROC MyUpdateKeyboardModifiers(NSUInteger newMods)
 
 	if (0 != changeMask) {
 		if (0 != (changeMask & MyNSEventModifierFlagCapsLock)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_CapsLock,
+			Keyboard_DispatchKey(MKC_formac_CapsLock, ASCII_None,
 				0 != (newMods & MyNSEventModifierFlagCapsLock));
 		}
 
 #if MKC_formac_RShift == MKC_formac_Shift
 		if (0 != (changeMask & MyNSEventModifierFlagShift)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Shift,
+			Keyboard_DispatchKey(MKC_formac_Shift, ASCII_None,
 				0 != (newMods & MyNSEventModifierFlagShift));
 		}
 #else
 		if (0 != (changeMask & My_NSLShiftKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Shift,
+			Keyboard_DispatchKey(MKC_formac_Shift, ASCII_None,
 				0 != (newMods & My_NSLShiftKeyMask));
 		}
 		if (0 != (changeMask & My_NSRShiftKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_RShift,
+			Keyboard_DispatchKey(MKC_formac_RShift, ASCII_None,
 				0 != (newMods & My_NSRShiftKeyMask));
 		}
 #endif
 
 #if MKC_formac_RControl == MKC_formac_Control
 		if (0 != (changeMask & MyNSEventModifierFlagControl)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Control,
+			Keyboard_DispatchKey(MKC_formac_Control, ASCII_None,
 				0 != (newMods & MyNSEventModifierFlagControl));
 		}
 #else
 		if (0 != (changeMask & My_NSLControlKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Control,
+			Keyboard_DispatchKey(MKC_formac_Control, ASCII_None,
 				0 != (newMods & My_NSLControlKeyMask));
 		}
 		if (0 != (changeMask & My_NSRControlKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_RControl,
+			Keyboard_DispatchKey(MKC_formac_RControl, ASCII_None,
 				0 != (newMods & My_NSRControlKeyMask));
 		}
 #endif
 
 #if MKC_formac_RCommand == MKC_formac_Command
 		if (0 != (changeMask & MyNSEventModifierFlagCommand)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Command,
+			Keyboard_DispatchKey(MKC_formac_Command, ASCII_None,
 				0 != (newMods & MyNSEventModifierFlagCommand));
 		}
 #else
 		if (0 != (changeMask & My_NSLCommandKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Command,
+			Keyboard_DispatchKey(MKC_formac_Command, ASCII_None,
 				0 != (newMods & My_NSLCommandKeyMask));
 		}
 		if (0 != (changeMask & My_NSRCommandKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_RCommand,
+			Keyboard_DispatchKey(MKC_formac_RCommand, ASCII_None,
 				0 != (newMods & My_NSRCommandKeyMask));
 		}
 #endif
 
 #if MKC_formac_ROption == MKC_formac_Option
 		if (0 != (changeMask & MyNSEventModifierFlagOption)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Option,
+			Keyboard_DispatchKey(MKC_formac_Option, ASCII_None,
 				0 != (newMods & MyNSEventModifierFlagOption));
 		}
 #else
 		if (0 != (changeMask & My_NSLOptionKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_Option,
+			Keyboard_DispatchKey(MKC_formac_Option, ASCII_None,
 				0 != (newMods & My_NSLOptionKeyMask));
 		}
 		if (0 != (changeMask & My_NSROptionKeyMask)) {
-			Keyboard_UpdateKeyMap2(MKC_formac_ROption,
+			Keyboard_DispatchKey(MKC_formac_ROption, ASCII_None,
 				0 != (newMods & My_NSROptionKeyMask));
 		}
 #endif
@@ -4711,10 +4713,14 @@ LOCALPROC ProcessEventLocation(NSEvent *event)
 
 LOCALPROC ProcessKeyEvent(blnr down, NSEvent *event)
 {
+	ProcessEventModifiers(event);
+
 	ui3r scancode = [event keyCode];
 
-	ProcessEventModifiers(event);
-	Keyboard_UpdateKeyMap2(Keyboard_RemapMac(scancode), down);
+	NSString *chars = [[event charactersIgnoringModifiers] uppercaseString];
+    ui3r uiChar = [chars length] ? (ui3r)[chars characterAtIndex:0] : 0;
+
+	Keyboard_DispatchKey(Keyboard_RemapMac(scancode), uiChar , down);
 }
 
 LOCALPROC ProcessOneSystemEvent(NSEvent *event)
