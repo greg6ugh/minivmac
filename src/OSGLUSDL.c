@@ -209,6 +209,8 @@ LOCALPROC dbglog_close0(void)
 
 #include "PBUFSTDC.h"
 
+#define Use_Keyboard_DispatchKey
+
 #include "CONTROLM.h"
 
 /* --- text translation --- */
@@ -1805,29 +1807,34 @@ LOCALFUNC ui3r SDLScan2MacKeyCode(SDL_Scancode i)
 }
 #endif /* SDL_MAJOR_VERSION */
 
-#if 1 == SDL_MAJOR_VERSION
-LOCALPROC DoKeyCode(SDL_keysym *r, blnr down)
-{
-	ui3r v = SDLKey2MacKeyCode(r->sym);
-	if (MKC_None != v) {
-		Keyboard_UpdateKeyMap2(v, down);
-	}
-}
-#elif SDL_MAJOR_VERSION >= 2
 LOCALPROC DoKeyCode(
-	#if SDL_MAJOR_VERSION >= 3
-	SDL_KeyboardEvent
-	#else
-	SDL_Keysym
-	#endif
-	*r, blnr down)
+#if SDL_MAJOR_VERSION >= 3
+	SDL_KeyboardEvent *r,
+#elif SDL_MAJOR_VERSION >= 2
+	SDL_Keysym *r,
+#else
+	SDL_keysym *r,
+#endif
+	blnr down)
 {
-	ui3r v = SDLScan2MacKeyCode(r->scancode);
+	ui5r k;
+	ui3r v;
+
+#if SDL_MAJOR_VERSION >= 3
+	k = (ui5r)r->key;
+	v = SDLScan2MacKeyCode(r->scancode);
+#elif SDL_MAJOR_VERSION >= 2
+	k = (ui5r)r->sym;
+	v = SDLScan2MacKeyCode(r->scancode);
+#else
+	k = (ui5r)r->sym;
+	v = SDLKey2MacKeyCode(r->sym);
+#endif
+
 	if (MKC_None != v) {
-		Keyboard_UpdateKeyMap2(v, down);
+		Keyboard_DispatchKey(v, k, down);
 	}
 }
-#endif /* SDL_MAJOR_VERSION */
 
 LOCALPROC DisableKeyRepeat(void)
 {
@@ -3865,18 +3872,18 @@ LOCALPROC HandleTheEvent(SDL_Event *event)
 			#endif
 			:
 			if (event->wheel.x < 0) {
-				Keyboard_UpdateKeyMap2(MKC_Left, trueblnr);
-				Keyboard_UpdateKeyMap2(MKC_Left, falseblnr);
+				Keyboard_DispatchKey(MKC_Left, ASCII_None, trueblnr);
+				Keyboard_DispatchKey(MKC_Left, ASCII_None, falseblnr);
 			} else if (event->wheel.x > 0) {
-				Keyboard_UpdateKeyMap2(MKC_Right, trueblnr);
-				Keyboard_UpdateKeyMap2(MKC_Right, falseblnr);
+				Keyboard_DispatchKey(MKC_Right, ASCII_None, trueblnr);
+				Keyboard_DispatchKey(MKC_Right, ASCII_None, falseblnr);
 			}
 			if (event->wheel.y < 0) {
-				Keyboard_UpdateKeyMap2(MKC_Down, trueblnr);
-				Keyboard_UpdateKeyMap2(MKC_Down, falseblnr);
+				Keyboard_DispatchKey(MKC_Down, ASCII_None, trueblnr);
+				Keyboard_DispatchKey(MKC_Down, ASCII_None, falseblnr);
 			} else if(event->wheel.y > 0) {
-				Keyboard_UpdateKeyMap2(MKC_Up, trueblnr);
-				Keyboard_UpdateKeyMap2(MKC_Up, falseblnr);
+				Keyboard_DispatchKey(MKC_Up, ASCII_None, trueblnr);
+				Keyboard_DispatchKey(MKC_Up, ASCII_None, falseblnr);
 			}
 			break;
 		case

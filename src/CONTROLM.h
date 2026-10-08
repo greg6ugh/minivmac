@@ -1253,7 +1253,6 @@ LOCALFUNC ui3r Keyboard_RemapMac(ui3r key)
 }
 #endif /* WantKeyboard_RemapMac */
 
-#if UseControlKeys || UseActvCode
 LOCALFUNC ui3r MKC2Ascii(ui3r key)
 {
 	switch (key) {
@@ -1301,8 +1300,6 @@ LOCALFUNC ui3r MKC2Ascii(ui3r key)
 		default: return ASCII_None;
 	}
 }
-#endif
-
 
 #ifdef Use_Keyboard_DispatchKey
 LOCALPROC Keyboard_DispatchKey(ui3r key, ui3r chr, blnr down)
