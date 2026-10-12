@@ -228,6 +228,11 @@ LOCALPROC WriteAppSpecificCNFUDOSGoptions(void)
 		WriteDestFileLn("#define NeedRequestIthDisk 1");
 	}
 
+	if (gbk_ACL_QWERTY != cur_AltCtrlLayout){
+		WriteCompCondBool(
+			GetDstAltCtrlLayoutName(cur_AltCtrlLayout), trueblnr);
+	}
+
 	WriteCompCondBool("UseControlKeys", trueblnr);
 	WriteCompCondBool("UseActvCode", WantActvCode);
 	WriteCompCondBool("EnableDemoMsg", WantDemoMsg);

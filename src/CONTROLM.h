@@ -1253,6 +1253,31 @@ LOCALFUNC ui3r Keyboard_RemapMac(ui3r key)
 }
 #endif /* WantKeyboard_RemapMac */
 
+#ifndef WantAltControl_AZERTY
+#define WantAltControl_AZERTY 0
+#endif
+#ifndef WantAltControl_QWERTZ
+#define WantAltControl_QWERTZ 0
+#endif
+
+LOCALFUNC ui3r AltKbrdToQwerty(ui3r key)
+{
+	switch (key) {
+#if WantAltControl_AZERTY
+		case MKC_A:	return MKC_Q;
+		case MKC_Q:	return MKC_A;
+		case MKC_Z:	return MKC_W;
+		case MKC_W:	return MKC_Z;
+		case MKC_M:	return MKC_None;
+		case MKC_SemiColon:	return MKC_M;
+#elif WantAltControl_QWERTZ
+		case MKC_Y:	return MKC_Z;
+		case MKC_Z:	return MKC_Y;
+#endif
+		default:	return key;
+	}
+}
+
 LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
 {
 #if UseControlKeys
@@ -1279,6 +1304,7 @@ LOCALPROC Keyboard_UpdateKeyMap2(ui3r key, blnr down)
 		Keyboard_UpdateKeyMap1(key, down);
 	} else {
 		if (down) {
+			key = AltKbrdToQwerty(key);
 #if UseControlKeys
 			if (SpecialModeTst(SpclModeControl)) {
 				DoControlModeKey(key);

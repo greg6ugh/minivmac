@@ -3094,6 +3094,83 @@ LOCALPROC WrtOptColorImage(void)
 }
 
 
+/* option: Alternate Control Layout */
+
+enum {
+	gbk_ACL_QWERTY,
+	gbk_ACL_AZERTY,
+	gbk_ACL_QWERTZ,
+	kNumACLs
+};
+
+LOCALVAR int cur_AltCtrlLayout;
+LOCALVAR ui3r olv_AltCtrlLayout;
+
+LOCALPROC ResetAltCtrlLayoutOption(void)
+{
+	cur_AltCtrlLayout = kListOptionAuto;
+	olv_AltCtrlLayout = 0;
+}
+
+LOCALFUNC char * GetAltCtrlLayoutName(int i)
+{
+	char *s;
+	switch (i) {
+		case gbk_ACL_AZERTY:
+			s = "azerty";
+			break;
+		case gbk_ACL_QWERTZ:
+			s = "qwertz";
+			break;
+		case gbk_ACL_QWERTY:
+		default:
+			s = "qwerty";
+			break;
+	}
+	return s;
+}
+
+LOCALFUNC char * GetDstAltCtrlLayoutName(int i)
+{
+	char *s;
+	switch (i) {
+		case gbk_ACL_AZERTY:
+			s = "WantAltControl_AZERTY";
+			break;
+		case gbk_ACL_QWERTZ:
+			s = "WantAltControl_QWERTZ";
+			break;
+		default:
+			s = "WantAltControl_None";
+			break;
+	}
+	return s;
+}
+
+LOCALFUNC tMyErr TryAsAltCtrlLayoutOptionNot(void)
+{
+	return FindNamedOption("-kbd", kNumACLs, GetAltCtrlLayoutName,
+		&cur_AltCtrlLayout, &olv_AltCtrlLayout);
+}
+
+#define dfo_AltCtrlLayout() gbk_ACL_QWERTY
+
+LOCALFUNC tMyErr ChooseAltCtrlLayout(void)
+{
+	if (kListOptionAuto == cur_AltCtrlLayout) {
+		cur_AltCtrlLayout = dfo_AltCtrlLayout();
+	}
+
+	return kMyErr_noErr;
+}
+
+LOCALPROC WrtOptAltCtrlLayout(void)
+{
+	WrtOptNamedOption("-kbd", GetAltCtrlLayoutName,
+		cur_AltCtrlLayout, dfo_AltCtrlLayout());
+}
+
+
 /* option: Alternate Happy Mac Icons */
 
 enum {
@@ -3915,6 +3992,7 @@ LOCALPROC SPResetCommandLineParameters(void)
 	ResetEnblCtrlRst();
 	ResetEnblCtrlKtg();
 	ResetWantColorImage();
+	ResetAltCtrlLayoutOption();
 	ResetAltHappyMacOption();
 	ResetRomSizeOption();
 	ResetCheckRomCheckSum();
@@ -3987,6 +4065,7 @@ LOCALFUNC tMyErr TryAsSPOptionNot(void)
 	if (kMyErrNoMatch == (err = TryAsEnblCtrlRstNot()))
 	if (kMyErrNoMatch == (err = TryAsEnblCtrlKtgNot()))
 	if (kMyErrNoMatch == (err = TryAsWantColorImageNot()))
+	if (kMyErrNoMatch == (err = TryAsAltCtrlLayoutOptionNot()))
 	if (kMyErrNoMatch == (err = TryAsAltHappyMacOptionNot()))
 	if (kMyErrNoMatch == (err = TryAsRomSizeOptionNot()))
 	if (kMyErrNoMatch == (err = TryAsCheckRomCheckSumNot()))
@@ -4064,6 +4143,7 @@ LOCALFUNC tMyErr AutoChooseSPSettings(void)
 	if (kMyErr_noErr == (err = ChooseEnblCtrlRst()))
 	if (kMyErr_noErr == (err = ChooseEnblCtrlKtg()))
 	if (kMyErr_noErr == (err = ChooseWantColorImage()))
+	if (kMyErr_noErr == (err = ChooseAltCtrlLayout()))
 	if (kMyErr_noErr == (err = ChooseAltHappyMac()))
 	if (kMyErr_noErr == (err = ChooseRomSize()))
 	if (kMyErr_noErr == (err = ChooseCheckRomCheckSum()))
@@ -4145,6 +4225,7 @@ LOCALPROC WrtOptSPSettings(void)
 	WrtOptEnblCtrlRst();
 	WrtOptEnblCtrlKtg();
 	WrtOptColorImage();
+	WrtOptAltCtrlLayout();
 	WrtOptAltHappyMac();
 	WrtOptRomSize();
 	WrtOptCheckRomCheckSum();
